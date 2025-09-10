@@ -12,7 +12,6 @@ import {
 import { useRouter } from "next/navigation"
 import { useState, useEffect } from "react"
 
-// Define a type for your teacher object for better type safety
 interface Teacher {
   name: string
   email: string
@@ -28,7 +27,6 @@ export function Navbar({ onMenuClick }: NavbarProps) {
   const router = useRouter()
 
   useEffect(() => {
-    // Wrap localStorage access in a try-catch block to prevent errors
     try {
       const teacherJson = localStorage.getItem("उpasthiti_current_teacher")
       if (teacherJson) {
@@ -39,15 +37,20 @@ export function Navbar({ onMenuClick }: NavbarProps) {
     }
   }, [])
 
-  const handleLogout = () => {
+  const handleLogout = (): void => {
     localStorage.removeItem("उpasthiti_teacher_logged_in")
     localStorage.removeItem("उpasthiti_current_teacher")
-    router.push("/")
+    router.push("/login")
+  }
+
+  const handleProfileClick = (): void => {
+    router.push("/teacher/profile")
   }
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-background border-b border-border">
       <div className="flex items-center justify-between px-4 py-3">
+        {/* Left Section */}
         <div className="flex items-center gap-3">
           <Button variant="ghost" size="sm" onClick={onMenuClick} className="lg:hidden">
             <Menu className="h-5 w-5" />
@@ -55,8 +58,9 @@ export function Navbar({ onMenuClick }: NavbarProps) {
           <h1 className="text-xl font-bold text-foreground">उpasthiti — Teacher Dashboard</h1>
         </div>
 
+        {/* Right Section */}
         <div className="flex items-center gap-2">
-          {/* FIX 1: Implemented a full DropdownMenu for notifications */}
+          {/* Notifications */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button
@@ -65,31 +69,31 @@ export function Navbar({ onMenuClick }: NavbarProps) {
                 className="hover:bg-accent hover:text-accent-foreground relative"
               >
                 <Bell className="h-5 w-5" />
-                {/* Optional: Notification badge */}
+                {/* Red dot */}
                 <span className="absolute top-1 right-1 flex h-2 w-2">
-                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
-                    <span className="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
                 </span>
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-80">
-                <div className="px-4 py-2 font-semibold">Notifications</div>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem>
-                    <p className="text-sm">New approval request from a student.</p>
-                </DropdownMenuItem>
-                <DropdownMenuItem>
-                    <p className="text-sm">Your weekly attendance report is ready.</p>
-                </DropdownMenuItem>
-                 <DropdownMenuSeparator />
-                 <DropdownMenuItem className="justify-center text-sm text-blue-500 hover:text-blue-600">
-                    View all notifications
-                 </DropdownMenuItem>
+            <DropdownMenuContent align="end" className="w-80 z-50">
+              <div className="px-4 py-2 font-semibold">Notifications</div>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem>
+                <p className="text-sm">New approval request from a student.</p>
+              </DropdownMenuItem>
+              <DropdownMenuItem>
+                <p className="text-sm">Your weekly attendance report is ready.</p>
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem className="justify-center text-sm text-blue-500 hover:text-blue-600">
+                View all notifications
+              </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
 
+          {/* Profile Menu */}
           <DropdownMenu>
-            {/* FIX 2: Removed the incorrect onClick handler that was blocking the trigger */}
             <DropdownMenuTrigger asChild>
               <Button
                 variant="ghost"
@@ -105,10 +109,11 @@ export function Navbar({ onMenuClick }: NavbarProps) {
                 <ChevronDown className="h-4 w-4 opacity-50" />
               </Button>
             </DropdownMenuTrigger>
+
             <DropdownMenuContent align="end" className="w-64 p-0 z-50">
               {currentTeacher ? (
                 <>
-                  {/* User Info Section */}
+                  {/* User Info */}
                   <div className="px-4 py-3 border-b">
                     <div className="flex items-center space-x-3">
                       <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-semibold text-lg">
@@ -117,14 +122,19 @@ export function Navbar({ onMenuClick }: NavbarProps) {
                       <div className="flex-1 min-w-0">
                         <p className="text-sm font-medium truncate">{currentTeacher.name}</p>
                         <p className="text-xs text-muted-foreground truncate">{currentTeacher.email}</p>
-                        <p className="text-xs text-muted-foreground">{currentTeacher.department} Department</p>
+                        <p className="text-xs text-muted-foreground">
+                          {currentTeacher.department} Department
+                        </p>
                       </div>
                     </div>
                   </div>
 
                   {/* Menu Items */}
                   <div className="py-1">
-                    <DropdownMenuItem className="px-4 py-2 cursor-pointer">
+                    <DropdownMenuItem
+                      onClick={handleProfileClick}
+                      className="px-4 py-2 cursor-pointer"
+                    >
                       <User className="h-4 w-4 mr-3" />
                       Profile
                     </DropdownMenuItem>
@@ -136,7 +146,7 @@ export function Navbar({ onMenuClick }: NavbarProps) {
 
                   <DropdownMenuSeparator />
 
-                  {/* Sign Out Section */}
+                  {/* Logout */}
                   <div className="py-1">
                     <DropdownMenuItem
                       onClick={handleLogout}

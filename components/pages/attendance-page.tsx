@@ -9,6 +9,7 @@ import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { QrCode, Clock, Users, UserCheck, Camera, RefreshCw, X, CheckCircle, Scan, MapPin } from "lucide-react"
+import { QRCodeCanvas } from "qrcode.react"
 
 interface AttendanceSession {
   id: string
@@ -498,15 +499,15 @@ export function AttendancePage() {
               <div className="w-48 h-48 bg-white flex items-center justify-center">
                 {activeSession?.qrCode ? (
                   <div className="text-center">
-                    <div className="w-40 h-40 bg-gray-900 mx-auto mb-2 flex items-center justify-center text-white text-xs p-2 rounded">
-                      <div className="grid grid-cols-8 gap-px">
-                        {/* Simple QR-like pattern */}
-                        {Array.from({ length: 64 }).map((_, i) => (
-                          <div key={i} className={`w-1 h-1 ${Math.random() > 0.5 ? "bg-white" : "bg-black"}`} />
-                        ))}
-                      </div>
-                    </div>
-                    <p className="text-xs text-gray-600">Session QR Code</p>
+                    <QRCodeCanvas
+                      value={activeSession.qrCode}
+                      size={192}
+                      bgColor="#0f172a"
+                      fgColor="#ffffff"
+                      level="M"
+                      includeMargin
+                    />
+                    <p className="text-xs text-gray-600 mt-2">Session QR Code</p>
                   </div>
                 ) : (
                   <div className="text-center">
