@@ -9,6 +9,7 @@ import {
   DropdownMenuTrigger,
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { useRouter } from "next/navigation"
 import { useState, useEffect } from "react"
 
@@ -30,10 +31,11 @@ export function Navbar({ onMenuClick }: NavbarProps) {
     try {
       const teacherJson = localStorage.getItem("उpasthiti_current_teacher")
       if (teacherJson) {
-        setCurrentTeacher(JSON.parse(teacherJson))
+        const parsed: Teacher = JSON.parse(teacherJson)
+        setCurrentTeacher(parsed)
       }
     } catch (error) {
-      console.error("Failed to parse teacher data from localStorage", error)
+      console.error("Invalid teacher data in localStorage", error)
     }
   }, [])
 
@@ -52,10 +54,18 @@ export function Navbar({ onMenuClick }: NavbarProps) {
       <div className="flex items-center justify-between px-4 py-3">
         {/* Left Section */}
         <div className="flex items-center gap-3">
-          <Button variant="ghost" size="sm" onClick={onMenuClick} className="lg:hidden">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={onMenuClick}
+            aria-label="Toggle sidebar"
+            className="lg:hidden"
+          >
             <Menu className="h-5 w-5" />
           </Button>
-          <h1 className="text-xl font-bold text-foreground">उpasthiti — Teacher Dashboard</h1>
+          <h1 className="text-xl font-bold text-foreground">
+            उpasthiti — Teacher Dashboard
+          </h1>
         </div>
 
         {/* Right Section */}
@@ -66,6 +76,7 @@ export function Navbar({ onMenuClick }: NavbarProps) {
               <Button
                 variant="ghost"
                 size="sm"
+                aria-label="Open notifications"
                 className="hover:bg-accent hover:text-accent-foreground relative"
               >
                 <Bell className="h-5 w-5" />
@@ -98,6 +109,7 @@ export function Navbar({ onMenuClick }: NavbarProps) {
               <Button
                 variant="ghost"
                 size="sm"
+                aria-label="Open profile menu"
                 className="flex items-center gap-2 hover:bg-accent hover:text-accent-foreground"
               >
                 <User className="h-5 w-5" />
@@ -116,12 +128,22 @@ export function Navbar({ onMenuClick }: NavbarProps) {
                   {/* User Info */}
                   <div className="px-4 py-3 border-b">
                     <div className="flex items-center space-x-3">
-                      <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-semibold text-lg">
-                        {currentTeacher.name.charAt(0)}
-                      </div>
+                      <Avatar>
+                        <AvatarImage
+                          src="/placeholder-user.jpg"
+                          alt={currentTeacher.name}
+                        />
+                        <AvatarFallback>
+                          {currentTeacher.name.charAt(0)}
+                        </AvatarFallback>
+                      </Avatar>
                       <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium truncate">{currentTeacher.name}</p>
-                        <p className="text-xs text-muted-foreground truncate">{currentTeacher.email}</p>
+                        <p className="text-sm font-medium truncate">
+                          {currentTeacher.name}
+                        </p>
+                        <p className="text-xs text-muted-foreground truncate">
+                          {currentTeacher.email}
+                        </p>
                         <p className="text-xs text-muted-foreground">
                           {currentTeacher.department} Department
                         </p>
@@ -159,7 +181,9 @@ export function Navbar({ onMenuClick }: NavbarProps) {
                 </>
               ) : (
                 <div className="px-4 py-3">
-                  <p className="text-sm text-muted-foreground">Loading user...</p>
+                  <p className="text-sm text-muted-foreground">
+                    Loading user...
+                  </p>
                 </div>
               )}
             </DropdownMenuContent>
