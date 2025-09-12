@@ -71,10 +71,11 @@ const getInitialRequests = (): StudentRequest[] => [
   },
 ]
 
-export function ApprovalsPage() {
+export default function ApprovalsPage() {
   const [requests, setRequests] = useState<StudentRequest[]>([])
   const [processingId, setProcessingId] = useState<string | null>(null)
 
+  // Load requests from localStorage or initialize
   useEffect(() => {
     const currentTeacher = JSON.parse(localStorage.getItem("उpasthiti_current_teacher") || "{}")
     const teacherId = currentTeacher.email || "default"
@@ -83,13 +84,13 @@ export function ApprovalsPage() {
     if (savedRequests) {
       setRequests(JSON.parse(savedRequests))
     } else {
-      // Initialize with default data for new teachers
       const initialRequests = getInitialRequests()
       setRequests(initialRequests)
       localStorage.setItem(`उpasthiti_requests_${teacherId}`, JSON.stringify(initialRequests))
     }
   }, [])
 
+  // Save requests to localStorage whenever updated
   useEffect(() => {
     if (requests.length > 0) {
       const currentTeacher = JSON.parse(localStorage.getItem("उpasthiti_current_teacher") || "{}")
@@ -101,23 +102,22 @@ export function ApprovalsPage() {
   const handleApproval = async (id: string, action: "approved" | "declined") => {
     setProcessingId(id)
 
-    // Simulate API call delay
+    // Simulate delay for API call
     await new Promise((resolve) => setTimeout(resolve, 1000))
 
     setRequests((prev) => {
-      const updatedRequests = prev.map((request) => (request.id === id ? { ...request, status: action } : request))
+      const updatedRequests = prev.map((req) =>
+        req.id === id ? { ...req, status: action } : req
+      )
 
       if (action === "approved") {
         const approvedStudent = updatedRequests.find((req) => req.id === id)
         if (approvedStudent) {
           const currentTeacher = JSON.parse(localStorage.getItem("उpasthiti_current_teacher") || "{}")
           const teacherId = currentTeacher.email || "default"
-
-          // Get existing students list
           const existingStudents = JSON.parse(localStorage.getItem(`उpasthiti_students_${teacherId}`) || "[]")
 
-          // Add new student if not already exists
-          const studentExists = existingStudents.some((student: any) => student.rollNo === approvedStudent.rollNo)
+          const studentExists = existingStudents.some((s: any) => s.rollNo === approvedStudent.rollNo)
           if (!studentExists) {
             const newStudent = {
               id: approvedStudent.id,
@@ -132,7 +132,6 @@ export function ApprovalsPage() {
               status: "Active",
               joinDate: new Date().toISOString().split("T")[0],
             }
-
             existingStudents.push(newStudent)
             localStorage.setItem(`उpasthiti_students_${teacherId}`, JSON.stringify(existingStudents))
           }
@@ -156,7 +155,7 @@ export function ApprovalsPage() {
       </div>
 
       <div className="space-y-6">
-        {/* Pending Requests Section */}
+        {/* Pending Requests */}
         {pendingRequests.length > 0 && (
           <div>
             <div className="flex items-center gap-2 mb-4">
@@ -176,50 +175,48 @@ export function ApprovalsPage() {
                     </div>
                   </CardHeader>
 
-                  <CardContent className="pt-0">
-                    <div className="space-y-3">
-                      <div className="text-sm font-medium text-foreground">
-                        {request.department} • {request.year} • {request.rollNo}
-                      </div>
+                  <CardContent className="pt-0 space-y-3">
+                    <div className="text-sm font-medium text-foreground">
+                      {request.department} • {request.year} • {request.rollNo}
+                    </div>
 
-                      <div className="text-xs text-muted-foreground">
-                        Requested: {new Date(request.requestDate).toLocaleDateString("en-IN")}
-                      </div>
+                    <div className="text-xs text-muted-foreground">
+                      Requested: {new Date(request.requestDate).toLocaleDateString("en-IN")}
+                    </div>
 
-                      <div className="flex gap-2 pt-2">
-                        <Button
-                          size="sm"
-                          onClick={() => handleApproval(request.id, "approved")}
-                          disabled={processingId === request.id}
-                          className="flex-1 bg-primary hover:bg-primary/90 text-primary-foreground"
-                        >
-                          {processingId === request.id ? (
-                            <div className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
-                          ) : (
-                            <>
-                              <CheckCircle className="h-4 w-4 mr-1" />
-                              Accept
-                            </>
-                          )}
-                        </Button>
+                    <div className="flex gap-2 pt-2">
+                      <Button
+                        size="sm"
+                        onClick={() => handleApproval(request.id, "approved")}
+                        disabled={processingId === request.id}
+                        className="flex-1 bg-primary hover:bg-primary/90 text-primary-foreground"
+                      >
+                        {processingId === request.id ? (
+                          <div className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
+                        ) : (
+                          <>
+                            <CheckCircle className="h-4 w-4 mr-1" />
+                            Accept
+                          </>
+                        )}
+                      </Button>
 
-                        <Button
-                          size="sm"
-                          variant="secondary"
-                          onClick={() => handleApproval(request.id, "declined")}
-                          disabled={processingId === request.id}
-                          className="flex-1"
-                        >
-                          {processingId === request.id ? (
-                            <div className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
-                          ) : (
-                            <>
-                              <XCircle className="h-4 w-4 mr-1" />
-                              Decline
-                            </>
-                          )}
-                        </Button>
-                      </div>
+                      <Button
+                        size="sm"
+                        variant="secondary"
+                        onClick={() => handleApproval(request.id, "declined")}
+                        disabled={processingId === request.id}
+                        className="flex-1"
+                      >
+                        {processingId === request.id ? (
+                          <div className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
+                        ) : (
+                          <>
+                            <XCircle className="h-4 w-4 mr-1" />
+                            Decline
+                          </>
+                        )}
+                      </Button>
                     </div>
                   </CardContent>
                 </Card>
@@ -228,7 +225,7 @@ export function ApprovalsPage() {
           </div>
         )}
 
-        {/* Recently Processed Section */}
+        {/* Recently Processed */}
         {processedRequests.length > 0 && (
           <div>
             <h3 className="text-lg font-semibold text-foreground mb-4">
@@ -238,40 +235,37 @@ export function ApprovalsPage() {
             <div className="grid gap-3">
               {processedRequests.slice(0, 5).map((request) => (
                 <Card key={request.id} className="bg-muted/30">
-                  <CardContent className="py-3">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-3">
-                        <User className="h-4 w-4 text-muted-foreground" />
-                        <div>
-                          <span className="font-medium text-foreground">{request.name}</span>
-                        </div>
+                  <CardContent className="py-3 flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <User className="h-4 w-4 text-muted-foreground" />
+                      <div>
+                        <span className="font-medium text-foreground">{request.name}</span>
                         <div className="text-sm text-muted-foreground">
                           {request.department} • {request.year} • {request.rollNo}
                         </div>
                       </div>
-
-                      <Badge
-                        variant={request.status === "approved" ? "default" : "destructive"}
-                        className={cn(
-                          "text-xs",
-                          request.status === "approved"
-                            ? "bg-primary text-primary-foreground"
-                            : "bg-destructive text-destructive-foreground",
-                        )}
-                      >
-                        {request.status === "approved" ? (
-                          <>
-                            <CheckCircle className="h-3 w-3 mr-1" />
-                            Approved
-                          </>
-                        ) : (
-                          <>
-                            <XCircle className="h-3 w-3 mr-1" />
-                            Declined
-                          </>
-                        )}
-                      </Badge>
                     </div>
+
+                    <Badge
+                      className={cn(
+                        "text-xs flex items-center gap-1 px-2 py-1 rounded",
+                        request.status === "approved"
+                          ? "bg-primary text-primary-foreground"
+                          : "bg-destructive text-destructive-foreground"
+                      )}
+                    >
+                      {request.status === "approved" ? (
+                        <>
+                          <CheckCircle className="h-3 w-3" />
+                          Approved
+                        </>
+                      ) : (
+                        <>
+                          <XCircle className="h-3 w-3" />
+                          Declined
+                        </>
+                      )}
+                    </Badge>
                   </CardContent>
                 </Card>
               ))}
