@@ -34,7 +34,7 @@ interface AlertGroup {
   alerts: AttendanceAlert[]
 }
 
-export function AlertsPage() {
+const AlertsPage = () => {
   const [alerts, setAlerts] = useState<AttendanceAlert[]>([])
   const [selectedLevel, setSelectedLevel] = useState("All Levels")
   const [selectedDepartment, setSelectedDepartment] = useState("All Departments")
@@ -196,9 +196,9 @@ export function AlertsPage() {
   }
 
   const handleSendNotification = (attendanceAlert: AttendanceAlert, type: string) => {
-  const message = `New ${type} alert: ${(attendanceAlert as any).message}`;
-  alert(message);
-};
+    const message = `New ${type} alert: ${(attendanceAlert as any).message}`;
+    alert(message);
+  };
 
 
   const criticalCount = alerts.filter((a) => a.alertLevel === "critical").length
