@@ -2,13 +2,14 @@
 
 import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
-import { Navbar } from "@/components/navbar"
-import { Sidebar } from "@/components/sidebar"
-import { ApprovalsPage } from "@/components/pages/approvals-page"
-import { SchedulePage } from "@/components/pages/schedule-page"
-import { StudentsPage } from "@/components/pages/students-page"
-import { AlertsPage } from "@/components/pages/alerts-page"
-import { AttendancePage } from "@/components/pages/attendance-page"
+import { Navbar } from "@/components/navbar"; 
+import {Sidebar } from "@/components/sidebar";
+import {ApprovalsPage} from "@/components/pages/approvals-page";
+import {SchedulePage} from "@/components/pages/schedule-page";
+import {StudentsPage} from "@/components/pages/students-page";
+import AlertsPage from "@/components/pages/alerts-page";
+import {AttendancePage} from "@/components/pages/attendance-page";
+
 
 export default function TeacherDashboard() {
   const [activeSection, setActiveSection] = useState("approvals")

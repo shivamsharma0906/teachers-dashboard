@@ -18,6 +18,7 @@
         "name": "next"
       }
     ],
+    "baseUrl": ".", // 💡 This line was missing
     "paths": {
       "@/*": ["./*"]
     }

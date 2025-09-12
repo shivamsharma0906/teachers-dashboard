@@ -34,7 +34,8 @@ interface AlertGroup {
   alerts: AttendanceAlert[]
 }
 
-const AlertsPage = () => {
+// ✅ FIX 1: Added "export default" to the function
+export default function AlertsPage() {
   const [alerts, setAlerts] = useState<AttendanceAlert[]>([])
   const [selectedLevel, setSelectedLevel] = useState("All Levels")
   const [selectedDepartment, setSelectedDepartment] = useState("All Departments")
@@ -44,7 +45,6 @@ const AlertsPage = () => {
     const currentTeacher = JSON.parse(localStorage.getItem("उpasthiti_current_teacher") || "{}")
     const teacherId = currentTeacher.email || "default"
 
-    // Get students from localStorage and filter those with <75% attendance
     const savedStudents = localStorage.getItem(`उpasthiti_students_${teacherId}`)
     if (savedStudents) {
       const students = JSON.parse(savedStudents)
@@ -60,12 +60,12 @@ const AlertsPage = () => {
             rollNo: student.rollNo,
             department: student.department,
             year: student.year,
-            section: "A", // Simplified - in real app, extract from roll number
+            section: "A",
             currentAttendance: student.attendancePercentage,
             requiredAttendance: 75,
             classesAttended: student.attendedClasses || 0,
             totalClasses: student.totalClasses || 0,
-            lastAttended: new Date(Date.now() - Math.random() * 7 * 24 * 60 * 60 * 1000).toISOString().split("T")[0], // Random date within last week
+            lastAttended: new Date(Date.now() - Math.random() * 7 * 24 * 60 * 60 * 1000).toISOString().split("T")[0],
             alertLevel,
             email: student.email,
             phone: student.phone,
@@ -75,56 +75,15 @@ const AlertsPage = () => {
 
       setAlerts(lowAttendanceStudents)
     } else {
-      // Demo data if no students exist
       const demoAlerts: AttendanceAlert[] = [
         {
-          id: "1",
-          studentName: "Ravi Mehta",
-          rollNo: "ME-2022-056",
-          department: "ME",
-          year: "2nd Year",
-          section: "A",
-          currentAttendance: 45,
-          requiredAttendance: 75,
-          classesAttended: 18,
-          totalClasses: 40,
-          lastAttended: "2024-01-10",
-          alertLevel: "critical",
-          email: "ravi.mehta@student.edu",
-          phone: "+91 32109 87654",
-          parentContact: "+91 98765 43210",
+          id: "1", studentName: "Ravi Mehta", rollNo: "ME-2022-056", department: "ME", year: "2nd Year", section: "A", currentAttendance: 45, requiredAttendance: 75, classesAttended: 18, totalClasses: 40, lastAttended: "2024-01-10", alertLevel: "critical", email: "ravi.mehta@student.edu", phone: "+91 32109 87654", parentContact: "+91 98765 43210",
         },
         {
-          id: "2",
-          studentName: "Amit Sharma",
-          rollNo: "CSE-2021-089",
-          department: "CSE",
-          year: "3rd Year",
-          section: "B",
-          currentAttendance: 58,
-          requiredAttendance: 75,
-          classesAttended: 23,
-          totalClasses: 40,
-          lastAttended: "2024-01-12",
-          alertLevel: "critical",
-          email: "amit.sharma@student.edu",
-          phone: "+91 87654 32109",
+          id: "2", studentName: "Amit Sharma", rollNo: "CSE-2021-089", department: "CSE", year: "3rd Year", section: "B", currentAttendance: 58, requiredAttendance: 75, classesAttended: 23, totalClasses: 40, lastAttended: "2024-01-12", alertLevel: "critical", email: "amit.sharma@student.edu", phone: "+91 87654 32109",
         },
         {
-          id: "3",
-          studentName: "Neha Patel",
-          rollNo: "ECE-2022-034",
-          department: "ECE",
-          year: "2nd Year",
-          section: "A",
-          currentAttendance: 68,
-          requiredAttendance: 75,
-          classesAttended: 27,
-          totalClasses: 40,
-          lastAttended: "2024-01-13",
-          alertLevel: "warning",
-          email: "neha.patel@student.edu",
-          phone: "+91 76543 21098",
+          id: "3", studentName: "Neha Patel", rollNo: "ECE-2022-034", department: "ECE", year: "2nd Year", section: "A", currentAttendance: 68, requiredAttendance: 75, classesAttended: 27, totalClasses: 40, lastAttended: "2024-01-13", alertLevel: "warning", email: "neha.patel@student.edu", phone: "+91 76543 21098",
         },
       ]
       setAlerts(demoAlerts)
@@ -139,17 +98,11 @@ const AlertsPage = () => {
     })
     .reduce((groups: { [key: string]: AlertGroup }, alert) => {
       const key = `${alert.department} • ${alert.year} • Section ${alert.section}`
-
       if (!groups[key]) {
         groups[key] = {
-          key,
-          department: alert.department,
-          year: alert.year,
-          section: alert.section,
-          alerts: [],
+          key, department: alert.department, year: alert.year, section: alert.section, alerts: [],
         }
       }
-
       groups[key].alerts.push(alert)
       return groups
     }, {})
@@ -169,37 +122,22 @@ const AlertsPage = () => {
   const getAlertConfig = (level: AttendanceAlert["alertLevel"]) => {
     switch (level) {
       case "critical":
-        return {
-          color: "border-l-destructive bg-destructive/5",
-          badgeColor: "bg-destructive text-destructive-foreground",
-          icon: AlertTriangle,
-          iconColor: "text-destructive",
-          label: "Critical",
-        }
+        return { color: "border-l-destructive bg-destructive/5", badgeColor: "bg-destructive text-destructive-foreground", icon: AlertTriangle, iconColor: "text-destructive", label: "Critical", }
       case "warning":
-        return {
-          color: "border-l-yellow-500 bg-yellow-50",
-          badgeColor: "bg-yellow-500 text-white",
-          icon: AlertCircle,
-          iconColor: "text-yellow-600",
-          label: "Warning",
-        }
+        return { color: "border-l-yellow-500 bg-yellow-50", badgeColor: "bg-yellow-500 text-white", icon: AlertCircle, iconColor: "text-yellow-600", label: "Warning", }
       case "moderate":
-        return {
-          color: "border-l-blue-500 bg-blue-50",
-          badgeColor: "bg-blue-500 text-white",
-          icon: Bell,
-          iconColor: "text-blue-600",
-          label: "Moderate",
-        }
+        return { color: "border-l-blue-500 bg-blue-50", badgeColor: "bg-blue-500 text-white", icon: Bell, iconColor: "text-blue-600", label: "Moderate", }
     }
   }
 
-  const handleSendNotification = (attendanceAlert: AttendanceAlert, type: string) => {
-    const message = `New ${type} alert: ${(attendanceAlert as any).message}`;
-    alert(message);
-  };
+  // ✅ FIX 2: Corrected the notification message logic
+  const handleSendNotification = (alert: AttendanceAlert, type: "student" | "parent") => {
+    const recipient = type === "parent" ? `parent of ${alert.studentName}` : alert.studentName;
+    const message = `Sending attendance warning to ${recipient}. ` +
+                    `Current attendance is ${alert.currentAttendance}%.`;
 
+    window.alert(message);
+  };
 
   const criticalCount = alerts.filter((a) => a.alertLevel === "critical").length
   const warningCount = alerts.filter((a) => a.alertLevel === "warning").length
@@ -215,7 +153,6 @@ const AlertsPage = () => {
         <p className="text-muted-foreground">Monitor students with attendance below 75% grouped by class sections.</p>
       </div>
 
-      {/* Alert Summary Cards */}
       <div className="grid gap-4 md:grid-cols-3 mb-6">
         <Card className="border-l-4 border-l-destructive">
           <CardContent className="p-4">
@@ -231,7 +168,6 @@ const AlertsPage = () => {
             </div>
           </CardContent>
         </Card>
-
         <Card className="border-l-4 border-l-yellow-500">
           <CardContent className="p-4">
             <div className="flex items-center gap-3">
@@ -246,7 +182,6 @@ const AlertsPage = () => {
             </div>
           </CardContent>
         </Card>
-
         <Card className="border-l-4 border-l-blue-500">
           <CardContent className="p-4">
             <div className="flex items-center gap-3">
@@ -263,7 +198,6 @@ const AlertsPage = () => {
         </Card>
       </div>
 
-      {/* Filters */}
       <Card className="mb-6">
         <CardHeader>
           <h3 className="font-medium text-foreground">Filter Alerts</h3>
@@ -282,7 +216,6 @@ const AlertsPage = () => {
                 ))}
               </SelectContent>
             </Select>
-
             <Select value={selectedDepartment} onValueChange={setSelectedDepartment}>
               <SelectTrigger>
                 <SelectValue placeholder="Department" />
@@ -299,7 +232,6 @@ const AlertsPage = () => {
         </CardContent>
       </Card>
 
-      {/* Grouped Alert Cards */}
       <div className="space-y-4">
         {groupedAlertsArray.length > 0 ? (
           groupedAlertsArray.map((group) => (
@@ -321,14 +253,13 @@ const AlertsPage = () => {
                     <div className="text-sm text-muted-foreground">
                       Avg:{" "}
                       {Math.round(
-                        group.alerts.reduce((sum, alert) => sum + alert.currentAttendance, 0) / group.alerts.length,
+                        group.alerts.reduce((sum, alert) => sum + alert.currentAttendance, 0) / group.alerts.length
                       )}
                       %
                     </div>
                   </div>
                 </div>
               </CardHeader>
-
               {expandedGroups.has(group.key) && (
                 <CardContent className="pt-0">
                   <div className="space-y-4">
@@ -336,7 +267,7 @@ const AlertsPage = () => {
                       const config = getAlertConfig(alert.alertLevel)
                       const Icon = config.icon
                       const classesNeeded = Math.ceil(
-                        (alert.requiredAttendance * alert.totalClasses) / 100 - alert.classesAttended,
+                        (alert.requiredAttendance * alert.totalClasses) / 100 - alert.classesAttended
                       )
 
                       return (
@@ -352,9 +283,7 @@ const AlertsPage = () => {
                               </div>
                               <Badge className={cn("text-xs", config.badgeColor)}>{config.label}</Badge>
                             </div>
-
                             <div className="grid gap-4 md:grid-cols-3">
-                              {/* Attendance Stats */}
                               <div className="space-y-2">
                                 <h5 className="text-sm font-medium text-foreground">Attendance Details</h5>
                                 <div className="space-y-1 text-sm">
@@ -382,8 +311,6 @@ const AlertsPage = () => {
                                   )}
                                 </div>
                               </div>
-
-                              {/* Last Activity */}
                               <div className="space-y-2">
                                 <h5 className="text-sm font-medium text-foreground">Last Activity</h5>
                                 <div className="space-y-1 text-sm text-muted-foreground">
@@ -395,15 +322,13 @@ const AlertsPage = () => {
                                     <TrendingDown className="h-3 w-3" />
                                     <span>
                                       {Math.floor(
-                                        (Date.now() - new Date(alert.lastAttended).getTime()) / (1000 * 60 * 60 * 24),
+                                        (Date.now() - new Date(alert.lastAttended).getTime()) / (1000 * 60 * 60 * 24)
                                       )}{" "}
                                       days ago
                                     </span>
                                   </div>
                                 </div>
                               </div>
-
-                              {/* Actions */}
                               <div className="space-y-2">
                                 <h5 className="text-sm font-medium text-foreground">Send Notification</h5>
                                 <div className="space-y-2">
@@ -416,7 +341,6 @@ const AlertsPage = () => {
                                     <Mail className="h-4 w-4 mr-2" />
                                     Notify Student
                                   </Button>
-
                                   {alert.parentContact && (
                                     <Button
                                       size="sm"
